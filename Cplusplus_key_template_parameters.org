@@ -72,3 +72,6 @@ class Grid
 extern const int emptyInt=0;
 Grid<int,emptyInt> myIntGrid;
 对于初始化我们还可以使用“零初始化”即 T().
+
+
+[[http://blog.csdn.net/pcliuguangtao/article/details/6445863][C++高级编程]]
