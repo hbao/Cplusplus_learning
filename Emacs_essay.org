@@ -126,3 +126,15 @@ M-2 _ 插入两个破折号
 
 19.C-x .
 设置编码风格
+
+20.M-x org-edit-src-code
+在#+BEGING_SRC <name>
+  #+END_SRC
+将光标置于源代码中间,按M-x org-edit-src-code（可以绑定到C-c s e）
+就可以在相应的模式下编辑该代码段,同时还可以使用C-c .更改缩进格式
+
+将org-src-fontify-natively该变量设为t,则该代码块里会语法高亮(需要revert-buffer
+来重新加载一下当前的org文件)
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-fontify-natively t)
+#+END_SRC
