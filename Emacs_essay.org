@@ -1,0 +1,79 @@
+* Org-mode Insert code
+#+NAME:<name>
+#+BEGIN_SRC <language><switches><header arguments>
+<body>
+#+END_SRC
+
+#+NAME：command
+#+BEGIN_SRC sh
+$cd mydroid
+$cp development/ide/eclipse/.classpath ~/mydroid
+$chmod u+w .classpath
+#+END_SRC
+
+*Easy Templates*
+<s TAB
+
+support:
+
+
+* Emacs quickKey
+1.M-number command
+command 执行number次
+M-4 Enter 插入4行空行
+M-8 Space 缩进八个空格
+M-2 _ 插入两个破折号
+
+2.C-x z
+重复执行一次先前命令，然后使用z继续执行C-x z
+
+3.M-%
+运行query-replace功能
+
+4.C-space set-mark-command
+标记矩形块一角
+
+5.C-x r k  kill-rectangle
+剪切当前矩形块,并保存在一个特殊的矩形区块缓冲区中
+
+6.C-x r d delete-rectangle
+删除当前的矩形区块,不为粘帖保存
+
+7.C-x r c clear-rectangle
+清除当前矩形区块,使用空白字符替换整个区域
+
+8.C-x r o open-rectangle
+打开当前的矩形区块,使用空白字符填充整个区域,并将该矩形区块的所有文本移动到右边
+
+9.C-x r y yank-rectangle
+在光标处粘帖上一次剪切的矩形区块的内容,将y所偶的现有文本移动到右边
+
+10.C-x C-x
+交换光标和标记
+
+11.M-<
+移动到缓冲区顶部
+
+12.M->
+移动到缓冲区底部
+
+13.M-@
+标记从光标到当前词尾
+
+14.C-k kill-line
+剪切整行
+
+15.M-k kill-sentence
+剪切从光标到句子的结尾处的内容
+
+16.M-z zap-to-char
+删除从光标到指定字符之间的所有文本
+
+17.M-y yank-pop
+移动剪切环中的下一个槽位
+
+18.C-y yank
+粘帖剪切环中制定槽位的内容
+
+19.C-x .
+设置编码风格
