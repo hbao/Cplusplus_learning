@@ -1,0 +1,115 @@
+* Cplusplus
+** _typename_ or _class_
+*** Section One
+*typename* 用在模板定义中,标明其后的模板参数是类型参数
+#+BEGIN_SRC C++
+template<typename T, class U> calc (const T&, const U&);
+template<typename T>
+const T& max (const T& x, const T& y)
+{
+        if (y < x) {
+                return x;
+        }
+
+        return y;
+}
+#+END_SRC
+
+该情况下,typename可用class替换
+#+BEGIN_SRC C++
+template<class T>
+const T& max (const T& x, const T& y)
+{
+        if (y < x) {
+                return x;
+        }
+
+        return y
+}
+#+END_SRC
+*** Section Two
+模板中标明'内嵌依赖类型名',内嵌依赖类型名
+#+BEGIN_SRC C++
+template<class _InputIter, class _Tp>
+typename iterator_traits<_InputIter>::difference_type
+count (_InputIter __first, _InputIter __last, const _Tp& __value) {
+        __STL_REQUIRES (_InputIter, _InputIterator);                          
+        __STL_REQUIRES (typename iterator_traits<_InputIter>::value_type,     
+                        _EqualityComparable);                                 
+        __STL_REQUIRES (_Tp, _EqualityComparable);                            
+        typename iterator_traits<_InputIter>::difference_type __n = 0;        
+        for (; __first != __last; ++__first)                                  
+                if (*__first == __value)                                      
+                        +++__n;                                               
+        return  __n;                                                          
+}
+#+END_SRC
+三个地方用到了typename:返回值,参数,变量定义
+typename iterator_traits<_Inputiter>::difference_type
+typename iterator_traits<_Inputiter>::value_type
+typename iterator_traits<_Inputiter>::difference_type __n = 0
+difference_type, value_type依赖于_Inputiter（模板类型参数)的类型名
+
+#+BEGIN_SRC C++
+template<class _Iterator>
+struct iterator_traits {
+        typedef typename _Iterator::iterator_category iterator_category;
+        typedef typename _Iterator::value_type value_type;
+        typedef typename _Iterator::difference_type difference_type;
+        typedef typename _Iterator::pointer pointer;
+        typedef typename _Iterator::reference reference;
+};
+#+END_SRC
+内嵌是指定义在类名的定义中的,以上difference_type和value_type都是定义在iterator_traits中的
+依赖是指依赖于一个模板参数
+typename iterator_traits<_Inputiter>::difference_type中的difference_type依赖于模板参数
+_Inputiter
+类型名是指这里最终要指出的是一个类型名,而不是变量
+iterator_traits<_Inputiter>::difference_type完全游客能是类iterator_traits<_Inputiter>
+类中的一个static对象,而我们这样写的的时候,C++默认就是解释位一个变量的,所以为了区分变量,必须使用typename
+告诉编译器.
+例外:
+1.类模板定义中的基类列表
+#+BEGIN_SRC C++
+template<class T>
+class Derived : public Base<T>::xxx
+{
+        ...
+}
+
+#+END_SRC
+
+2.类模板定义中的初始化列表
+#+BEGIN_SRC C++
+Derived (int x) : Base<T>::xxx(x)
+{
+        
+}
+#+END_SRC
+原因:基类列表里肯定是类型名,初始化列表里肯定是成员变量名
+
+在模板定义内部制定类型,
+*error*
+#+BEGIN_SRC C++
+template<class Parm, class U>
+Parm fcn (Parm* array, U value)
+{
+        Parm::size_type *p;
+//歧义
+//如果Parm::size_type是一个类型,这句话的意思就是声明一个变量
+//如果Parm::size_type是一个变量(对象)，这句话的意思就是惩罚运算
+}
+#+END_SRC
+
+假如像上面的代码一样在模板中使用这种语句,则编译器将无法辨别Parm::size_type是一个
+变量还是一个类型,所以必须显式的告诉编译器Parm::size_type是一个类型
+
+#+BEGIN_SRC  C++
+template<class Parm, class U>
+Parm fcn (Parm *array, U value)
+{
+        typename Parm::size_type *p;
+}
+
+#+END_SRC
+*Reference* [[http://blog.csdn.net/chenyu964877814/article/details/7346499][web_ref]]
