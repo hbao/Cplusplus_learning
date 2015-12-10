@@ -1,8 +1,20 @@
 * Org-mode Insert code
+
+##+NAME:<name>
+##+BEGIN_SRC <language><switches><header arguments>
+<body>
+##+END_SRC
 #+NAME:<name>
 #+BEGIN_SRC <language><switches><header arguments>
 <body>
 #+END_SRC
+
+##+NAME：command
+##+BEGIN_SRC sh
+#$cd mydroid
+#$cp development/ide/eclipse/.classpath ~/mydroid
+#$chmod u+w .classpath
+##+END_SRC
 
 #+NAME：command
 #+BEGIN_SRC sh
@@ -16,6 +28,43 @@ $chmod u+w .classpath
 
 support:
 
+下面说一下BEGIN_SRC支持的语言类型
+语言                    标识符
+Asymptote               asymptote
+Awk                     awk
+Emacs Calc              calc
+C                       C
+C++                     C++
+Clojure                 clojure
+CSS                     css
+ditaa                  ditta
+Graphviz               dot
+Emacs Lisp             emacs-lisp
+gnuplot                gnuplot
+Haskell                haskell
+Java                   java
+Javascript             js
+LaTeX                  latex
+Ledger                 ledger
+Lisp                   lisp
+Lilypond               lilypond
+MATLAB                 matlab
+Mscgen                mscgen
+Objective Caml        ocaml
+Octave                octave
+Org mode              org
+Oz                    oz
+Perl                  perl
+Plantuml              plantuml
+Python                python
+R                     R
+Ruby                 ruby
+Sass                 sass
+Scheme               scheme
+GNU Screen           screen
+shell                sh
+SQL                  sql
+SQLite               sqlite
 
 * Emacs quickKey
 1.M-number command
