@@ -1,0 +1,210 @@
+* Cplusplus
+** *template* and *specify*
+*** Section one
+1.class template definition
+#+BEGIN_SRC C++
+  template<class T>
+  class foo {
+    ...
+  }
+#+END_SRC
+
+*example:*
+#+BEGIN_SRC C++
+  template<class T>
+  class Test {
+  private:
+    T n;
+    const T i;
+    static T cnt;
+  public:
+    Test () : i(0){}
+    Test (T k);
+    ~Test () {}
+    void print ();
+    T operator+ (T x);
+  };
+#+END_SRC
+2.define member method outside of class
+#+BEGIN_SRC C++
+  tempalt<class T>
+  void Test<T>::print ()
+  {
+    std::cout << "n = " << n << std::endl;
+    std::cout << "i = " << i << std::endl;
+    std::cout << "cnt = " <<cnt <<std::endl;
+  }
+
+  template<class T>
+  Test<T>::Test (T k) : i(k) { n = k; cnt++; }
+  template<class T>
+  T Test<T>::operator+ (T x) {
+    return n + x;
+  }
+#+END_SRC
+3.initialize const/static member vars outside of class
+#+BEGIN_SRC C++
+  template<class T>
+  int Test<T>::cnt = 0;
+  template<class T>
+  Test<T>::Test (T k) : i(k) { n = k; cnt++; }
+#+END_SRC
+4.use of class tempalte
+*format:* 类名<实际类型>
+5 function template or template function
+函数模板可以用来创建一个通用的函数,最大特点是把函数使用的数据类型作为参数
+*声明类型:*
+#+BEGIN_SRC C++
+  template<typename/class T>
+  <返回类型><函数名><参数列表>
+  {
+    <body>;
+  }
+#+END_SRC
+函数模板只是声明一个函数的描述,不是一个可以直接执行的函数,只有根据实际情况
+用实参的数据类型代替类型参数标识符之后,才能产生真正的函数
+
+模板函数的生成就是将函数模板的类型形参实例化的过程
+6.template parameter
+#+BEGIN_SRC C++
+  template<class T, int maxsize = 100>
+  class Stack {
+  public:
+    Stack ();
+    ~Stack ();
+    void push (T t);
+    T pop ();
+    bool isEmpty ();
+  private:
+    T *m_pT;
+    int m_maxSize;
+    int m_size;
+  };
+#+END_SRC
+*realize:*
+#+BEGIN_SRC C++
+  template<class T, int maxsize>
+  Stack<T, maxsize>::Stack ()
+  {
+    m_maxSize = maxsize;
+    m_size = 0;
+    m_pT = new T(m_maxSize);
+  }
+
+  template<class T, int maxsize>
+  Stack<T, maxsize>::~Stack () {
+    if (m_pT)
+      delete []m_pT;
+  }
+
+  template<class T, int maxsize>
+  void Stack<T, maxsize>::push (T t) {
+    m_size++;
+    m_pT[m_size - 1] = t;
+  }
+
+  template<class T, int maxsize>
+  T Stack<T, maxsize>::pop () {
+    T t = m_pT[--m_size];
+
+    return t;
+  }
+
+  template<class T, int maxsize>
+  bool Stack<T, maxsize>::isEmpty () {
+    return 0 == m_size;
+  }
+#+END_SRC
+
+*use：*
+#+BEGIN_SRC C++
+  #include <...>
+
+  int main (void)
+  {
+    int maxsize = 1024;
+    Stack<int, 1024> intStack;
+
+    for (int i = 0; i < maxsize; i++)
+      intStack.push (i);
+
+    while (!intStack.isEmpty ())
+      cout << "num:" <<intStack.pop () << endl;
+
+    return 0;
+  }
+#+END_SRC
+
+7.specify template
+*函数模板特化：*
+#+BEGIN_SRC C++
+  //method.h
+  template<class T> void swap (T& t1, T& t2);
+  /*============================================*/
+  //method.cpp
+  #include <vector>
+  using namespace std;
+
+  template<class T> void swap (T& t1, T& t2)
+  {
+    T tmpT;
+    tmpT = t1;
+    t1 = t2;
+    t2 = tmpT;
+  }
+
+  //特化
+  template<> void swap (std::vector<int>& t1, std::vector<int>& t2)
+  {
+    t1.swap (t2);
+  }
+#+END_SRC
+*类模板特化:*
+a.全特化
+#+BEGIN_SRC C++
+  template<class T>
+  class compare {
+  public:
+    bool equal (T t1, T t2)
+    {
+      return t1 == t2;
+    }
+  };
+  //特化
+  template<> class compare<char *> {
+  public:
+    bool equal (char* t1, char* t2)
+    {
+      return strcmp (t1, t2) == 0;
+    }
+  };
+#+END_SRC
+b.特化为引用,指针类型
+#+BEGIN_SRC C++
+  template<class _Iterator>
+  struct iterator_traits {
+    typedef typename _Iterator::iterator_category iterator_category;
+    typedef typename _Iterator::value_type value_type;
+    typedef typename _Iterator::difference_type difference_type;
+    typedef typename _Iterator::pointer pointer;
+    typedef typename _Iterator::reference reference;
+  };
+
+  template<class _Tp>
+  struct iterator_traits<_Tp*> {
+    typedef random_access_iterator_tag iterator_category;
+    typedef _Tp value_type;
+    typedef ptrdiff_t difference_type;
+    typedef _Tp* pointer;
+    typedef _Tp& reference;
+  };
+
+  template<class _Tp>
+  struct iterator_traits<const _Tp*> {
+    typedef random_access_iterator_tag iterator_category;
+    typedef _Tp value_type;
+    typedef ptrdiff_t difference_type;
+    typedef const _Tp* pointer;
+    typedef const _Tp& reference;
+  };
+#+END_SRC
