@@ -1,0 +1,74 @@
+*实际上有三种类型模板参数：类型模板参数、无类型模板参数和模板模板参数(以模板作为模板的参数)*
+* 1、类型模板参数
+类型模板参数是我们使用模板的主要目的。我们可以定义多个类型模板参数：
+template<typename T,typename Container>
+class Grid
+{...}
+同样，也可以为类型模板参数指定默认值：
+#include <iostream>
+using std::vector;
+template<typename T,typename Contianer=vector<T> >  //注意空格
+class Grid
+{...}
+* 2、模板模板参数(template template parameter)
+就是将一个模板作为另一个模板的参数。
+正如上面的一个例子：
+Grid<int,vector<int> > myIntGrid;
+注意其中int出现了两次，必须指定Grid和vector的元素类型都是int。
+如果写成：
+Grid<int,vector> myIntGrid;
+因为vector本身就是一个模板，而不是一个类型，所以这就是一个模板模板参数。指定模板模板参数有点像在常规的函数中指定函数指针参数。
+函数指针类型包括返回类型和函数的参数类型。在声明模板模板参数的时候也要包括完整的模板声明：
+首先要知道作为参数的模板的原型,比如vector
+template<typename E,typename Allocator=allocator<E> >
+class vector
+{...};
+然后就可以定义：
+template<typename T,template<typename E,typename Allocator=allocator<E> >class Container=vector>
+class Grid
+{
+public:
+ //Omitted for brevity
+ Container<T>* mCells;
+};
+模板模板参数的一般语法：
+template<other params,...,template<TemplateTypeParams> class ParameterName,other params,...>
+举例一个应用，Grid的一个构造函数：
+template<typename T,template<typename E,typename Allocator=allocator<E> >class Container>
+Grid<T,Container>::Grid(int inWidth,int inHeight):
+mWidth(inWidth),mHeight(inHeight)
+{
+mCells=new Container<T> [mWidth];   //注意此处Container<T>说明，实际上还是说明 Grid<int,vector<int> >
+for(int i=0;i<mWidth;++i)
+  mCells[i].resize(mHeight);
+}
+使用的时候，与一般的没有什么区别：
+Grid<int,vector> myGrid;
+myGrid.getElement(2,3);
+注意：不要拘泥于它的语法实现，只要记住可以使用模板作为模板的一个参数。
+* 3、无类型模板参数
+无类型模板参数不能是对象，甚至不能是double或者float。无类型参数仅限于int、enmu、指针和引用。
+有时可能想要允许用户指定一个特定值的元素来初始化空对象，可以使用以下的方法：
+template<typename T,const T EMPTY>
+class Grid
+{
+public:
+  //Omitted for brevity
+  Grid(const Grid<T,EMPTY>& src);
+  Grid<T,EMPTY>& operator=( const Grid<T,EMPTY>& rhs);
+  //...
+};
+我们可以这样使用：
+Grid<int,10> myIntGrid;
+Grid<int,20> myIntGrid2;
+初始值可以是任意的int数，也就是必须是int、enmu、指针和引用的一种。
+* 4、指针和引用模板参数
+指针和引用模板参数必须指向所有翻译单元中都可用的全局变量。对于这些类型的变量，相应的技术术语就是带有外部连接的数据。
+使用extern声明即可。
+如:
+template<typename T ,const T& EMPTY>
+class Grid
+{...};
+extern const int emptyInt=0;
+Grid<int,emptyInt> myIntGrid;
+对于初始化我们还可以使用“零初始化”即 T().
