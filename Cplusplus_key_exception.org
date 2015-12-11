@@ -1,0 +1,44 @@
+* Cplusplus
+** exception dispose
+_stack.h_
+#+BEGIN_SRC C++
+  namespace Stack {
+    void push (char);
+    char pop ();
+
+    class Overflow {}; //表示溢出异常的类型
+  }
+#+END_SRC
+当检查到溢出之时,Stack::push ()可以激活异常处理代码,即它抛出一个Overflow异常
+_stack.c_
+#+BEGIN_SRC C++
+  #include "stack.h"
+
+  namespace Stack {
+    const int max_size = 200;
+    char v[max_size];
+    int top = 0;
+  }
+
+  void Stack::push (char c)
+  {
+    if (top == max_size) throw Overflow();
+    //压入c
+  }
+#+END_SRC
+该throw将把控制传递给某个能处理Stack::Overflow异常的处理器,该处理器应该位于某个之间或间接调用Stack::push ()的函数里
+在这个传递过程中,实现将根据需要退掉一部分函数调用栈,退回到能处理异常的那个调用函数的环境位置,抛出异常的行为就像是一种多层放回
+*example:*
+_user.c_
+#+BEGIN_SRC C++
+  void f ()
+  {
+    //..
+    try {
+      while (true) Stack::push ('c');
+    } catch (Stack::Overflow) {
+      //出现异常,执行适当动作
+    }
+    //...
+  }
+#+END_SRC
