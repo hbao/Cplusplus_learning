@@ -1,0 +1,183 @@
+* Cplusplus
+** custom define type
+_complex.h_
+#+BEGIN_SRC C++
+  class complex {
+    double re, im;
+  public:
+    complex (double r, double i) { re = r; im = i; }
+    complex (double r) { re = r; im = 0; }
+    complex () { re = 0; im = 0; }
+
+    friend complex operator+ (complex, complex);
+    friend complex operator- (complex, complex);
+    friend complex operator- (complex);
+    friend complex operator* (complex, complex);
+    friend complex operator/ (complex, complex);
+
+    friend bool operator== (complex, complex);
+    friend bool operator!= (complex, complex);
+  };
+#+END_SRC
+
+_complex.cpp_
+#+BEGIN_SRC C++
+  complex operator+ (complex a1, complex a2)
+  {
+    return complex (a1.re + a2.re, a1.im + a2.im);
+  }
+#+END_SRC
+
+_user.cpp_
+#+BEGIN_SRC C++
+  void f (complex z)
+  {
+    complex a = 2.3;
+    complex b = 1/a;
+    complex c = a + b * complex (1, 2.3);
+    //...
+    if (c != b) c = -(b / a) + 2 * b;
+  }
+#+END_SRC
+
+*具体类型:*
+遵循complex那种定义方式的用户定义的Stack类型
+#+BEGIN_SRC C++
+  class Stack {
+    char *v;
+    int top;
+    int max_size;
+  public:
+    class Underflow {};    //用做异常
+    class Overflow {};     //用作异常
+    class Bad_size {};     //用作异常
+
+    Stack (int s);         //构造函数
+    ~Stack ();             //析构函数
+
+    void push (char c);
+    char pop ();
+  };
+
+  Stack：：Stack (int s)
+  {
+    top = 0;
+    if (s < 0 || 10000 < s) throw Bad_size();
+    max_size = s;
+    v = new char[s]; //自由存储(堆动态存储)中为元素分配存储
+  }
+
+  Stack::~Stack ()
+  {
+    if (v)
+      delete[] v;    //释放元素存储,使空间可能重新使用
+  }
+#+END_SRC
+
+_user.c_
+#+BEGIN_SRC C++
+  Stack s_var1(10);
+
+  void f (Stack& s_ref, int i)
+  {
+    Stack s_var2[i];
+    Stack* s_ptr = new Stack(20);
+
+    s_var1.push ('a');
+    s_var2.push ('b');
+    s_ref.push ('c');
+    s_ptr->push ('d');
+  }
+
+
+  void Stack::push (char c)
+  {
+    if (top == max_size) throw Overflow();
+    v[top] = c;
+    top = top + 1;
+  }
+
+  char Stack::pop ()
+  {
+    if (top == 0) throw Underflow();
+    top = top - 1;
+    return v[top];
+  }
+#+END_SRC
+
+*抽象类型:*
+界面于表示的完全分离,这时需要放弃的就是真正的局部变量
+
+首先定义界面
+#+BEGIN_SRC C++
+  class Stack {
+  public:
+    class Underflow {};     //用于异常
+    class Overflow {};      //用于异常
+
+    virtual void push (char c) = 0;
+    virtual char pop () = 0;
+  };
+#+END_SRC
+
+*virtual* 在simula和c++里的意思是"可以在今后由该类所派生的类里重新定义"
+由Stack派生出的一个类将提供这个Stack界面的一个具体实现,“=0”语法形式说明在
+Stack怕生的某些类中必须定义这些函数,这样Stack就能作为任何实现push()和pop()
+的类的界面了
+*use:*
+#+BEGIN_SRC C++
+  void f (Stack& s_ref)
+  {
+    s_ref.push ('c');
+
+    if (s_ref.pop () != 'c') throw Bad_pop();
+  }
+#+END_SRC
+f ()使用了Stack界面,而完全忽略了实现的细节，为另外一些不同的类提供界面的类被成为多态类型
+
+#+BEGIN_SRC C++
+  class Array_stack : public Stack {
+    char* p;
+    int max_size;
+    int top;
+  public:
+    Array_stack (int s);
+    ~Array_stack ();
+
+    void push (char c);
+    char pop ();
+  };
+
+
+  void g ()
+  {
+    Array_stack as (200);
+    f (as);
+  }
+  /*对于像f ()这样的使用着Stack,但却完全不用管其实现细节的函数,需要由另外的函数区为它创建对象,使f ()一类的函数可以在这些对象上操作,因为f () 根本不知到Array_stack，只知道Stack界面,它在Stack的另一个不同实现上工作起来也同样很好 */
+
+#+END_SRC
+
+#+BEGIN_SRC C++
+  class List_stack : public Stack {
+    list<char> lc;      //标准库字符的表
+  public:
+    List_stack () {}
+
+    void push (char c) { lc.push_front (c); }
+    char pop ();
+  };
+
+  char List_stack::pop ()
+  {
+    char x = lc.font ();  //获取第一个元素
+    lc.pop_front ();      //删除第一个元素
+    return x;
+  }
+
+  void h ()
+  {
+    List_stack ls;
+    f (ls);
+  }
+#+END_SRC
