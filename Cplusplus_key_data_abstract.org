@@ -1,0 +1,67 @@
+* Cplusplus
+** data abstract
+使用模块的方式来提供一种用户定义类型的形式
+*定义类型的模块*
+希望有许多堆栈而不是像前面用一个由Stack模块提供的堆栈,我们可以定义一个堆栈管理器
+_stack.h_
+#+BEGIN_SRC C++
+  namespace Stack {
+    struct Rep;           //在另外某个地方定义堆栈的布局
+    typedef Rep& stack;
+
+    stack create ();      //创建一个新堆栈
+    void destroy (stack s); //删除s
+
+    void push (stack s, char c); //将c压入s
+    char pop (stack s);   //弹出s
+  }
+    
+#+END_SRC
+
+_user.c_
+#+BEGIN_SRC C++
+  #include "stack.h"
+
+  struct Bad_pop {};
+
+  void f ()
+  {
+    Stack::stack s1 = Stack::create (); //创建一个新堆栈
+    Stack::stack s2 = Stack::create (); //创建另一个堆栈
+
+    Stack::push (s1, 'c');
+    Stack::push (s2, 'k');
+
+    if (Stack::pop (s1) != 'c') throw Bad_pop ();
+    if (Stack::pop (s2) != 'k') throw Bad_pop ();
+
+    Stack::destroy (s1);
+    Stack::destroy (s2);
+  }
+#+END_SRC
+
+_stack.c_
+#+BEGIN_SRC C++
+  namespace Stack {
+    const int max_size = 200;
+    struct Rep {
+      char v[max_size];
+      int top;
+    };
+
+    const int max = 16;  //最大堆栈数
+    Rep stacks[max];     //预分配的堆栈表示
+    bool used[max];      //如果stacks[i]在使用,则used[i]为真
+
+    typedef  Rep& stack;
+  }
+
+  void Stack::push (stack s, char c) {}
+  char Stack::pop (stack s) {}
+  Stack::stack Stack::create ()
+  {
+    //找一个未使用的Rep,将它标记为已使用的,将它初始化,并放回它的引用
+  }
+
+  void Stack::destroy (stack s) {//标记s为未使用的}
+#+END_SRC
