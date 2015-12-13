@@ -138,3 +138,21 @@ M-2 _ 插入两个破折号
 #+BEGIN_SRC emacs-lisp
   (setq org-src-fontify-natively t)
 #+END_SRC
+
+* Emacs中文字体设置和英文字体设置
+
+Emacs定制字体,可以分别设置中英文字体,在.emacs中加入如下代码:
+#+BEGIN_SRC emacs-lisp
+  ;;中文与外文字体设置
+  ;;Setting English Font
+  (set-face-attribute
+   'default nil :font "monofur 12")
+  ;;Chinese Font
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font (frame-parameter nil 'font)
+                      charset
+                      (font-spec :family "WenQuanYi Zen Hei Mono" :size 14)))
+#+END_SRC
+
+*文件名: 备份(backup)文件
+#文件名#: 自动保存(autosave)文件
