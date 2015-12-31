@@ -113,3 +113,5 @@ Parm fcn (Parm *array, U value)
 
 #+END_SRC
 *Reference* [[http://blog.csdn.net/chenyu964877814/article/details/7346499][web_ref]]
+[[http://stackoverflow.com/questions/610245/where-and-why-do-i-have-to-put-the-template-and-typename-keywords][typename]]
+[[http://feihu.me/blog/2014/the-origin-and-usage-of-typename/][typename1]]
